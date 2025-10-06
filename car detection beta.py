@@ -5,12 +5,15 @@ import time
 from flask import Flask, render_template, Response
 
 # -------------------
-# Load YOLOv4 model
+# Load COCO Names
 # -------------------
 with open("coco.names", "r") as f:
     classes = [line.strip() for line in f.readlines()]
 
-yolo_net = cv2.dnn.readNet("yolov4.weights", "yolov4.cfg")
+# -------------------
+# Load YOLOv4-Tiny model
+# -------------------
+yolo_net = cv2.dnn.readNet("yolov4-tiny.weights", "yolov4-tiny.cfg")
 
 layer_names = yolo_net.getLayerNames()
 output_layers = [layer_names[i - 1] for i in yolo_net.getUnconnectedOutLayers()]
@@ -54,8 +57,8 @@ def generate_frames():
         frame = imutils.resize(frame, width=700)
         height, width = frame.shape[:2]
 
-        # YOLO blob
-        blob = cv2.dnn.blobFromImage(frame, 1/255.0, (320, 320), swapRB=True, crop=False)
+        # YOLOv4-Tiny blob
+        blob = cv2.dnn.blobFromImage(frame, 1/255.0, (416, 416), swapRB=True, crop=False)
         yolo_net.setInput(blob)
         layer_outputs = yolo_net.forward(output_layers)
 
